@@ -6,6 +6,7 @@ using UnityEngine;
 public class Enemies : MonoBehaviour
 {
     public Player player;
+    public HealthBarManager healthBarManager;
 
     public bool isEnemyTurn = false;
     public bool isUndead = false;
@@ -13,8 +14,9 @@ public class Enemies : MonoBehaviour
     public bool isWolf = false;
     public bool isEnemyDead = true;
 
-    public int enemyLevel = 1;
+    public int enemyLevel;
     public int enemyXP;
+    public int poisonStacks = 0;
 
     public float health = 50;
     public float maxHealth = 50;
@@ -33,10 +35,11 @@ public class Enemies : MonoBehaviour
     public void RandomiseStats() 
     {
         isEnemyDead = false;
-        enemyLevel = Random.Range((player.playerLevel), (player.playerLevel + 2));
-        maxHealth = 50 + Mathf.CeilToInt(1.5f * (float)enemyLevel);
+        enemyLevel = Random.Range((player.playerLevel) + 1, (player.playerLevel + 2));
+        maxHealth = 50 + Mathf.CeilToInt(50 * (0.5f * (float)enemyLevel));
         health = maxHealth;
-        enemyXP = 15 * enemyLevel;
+        healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
+        enemyXP = Random.Range(10, 16) * enemyLevel;
         int monsterType = Random.Range(1, 4);
         if (monsterType == 1)
         {
@@ -69,7 +72,7 @@ public class Enemies : MonoBehaviour
             player.health -= enemyDamage;
             Debug.Log("You are hit for " + enemyDamage + " damage.");
             Debug.Log("You have " + player.health + " health remaining.");
-            player.UpdateHealthBar(player.health, player.maxHealth);
+            healthBarManager.UpdatePlayerHealthBar(player.health, player.maxHealth);
             isEnemyTurn = false;
             player.isPlayerTurn = true;
         }
@@ -134,13 +137,11 @@ public class Enemies : MonoBehaviour
             {
                 player.health = player.maxHealth;
                 Debug.Log("You feel <color=yellow>fully</color> rejuvinated.");
-                player.UpdateHealthBar(player.health, player.maxHealth);
             }
             else
             {
                 player.health += healAmount;
                 Debug.Log("You heal for <color=green>" + healAmount + "</color> HP.");
-                player.UpdateHealthBar(player.health, player.maxHealth);
             }
         }
     }

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public Enemies enemy;
-
-    [SerializeField] private Image healthBarFill;
+    public HealthBarManager healthBarManager;
+    public Image xPBarFill;
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -15,9 +15,9 @@ public class Player : MonoBehaviour
     public bool hammerHoly = false;
 
     public int playerLevel = 0;
-    public int xP = 0;
-    public int requiredXP = 100;
 
+    public float xP = 0;
+    public float requiredXP = 100;
     public float health = 100f;
     public float maxHealth = 100f;
 
@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        xPBarFill.fillAmount = xP / requiredXP;
         PickWeapons();
         ShowControls();
 
@@ -155,6 +155,7 @@ public class Player : MonoBehaviour
         if (daggerPoison == true)
         {
             ChargeAttack();
+            Attacks(3, 2, 7, 4, 0, 0);
         }
     }
 
@@ -169,7 +170,7 @@ public class Player : MonoBehaviour
 
     void ChargeAttack()
     {
-        if ((chargedCharges == 2 && storedCharges < 2) || storedCharges == 0 || chargedCharges == 4) // stops player wasting charges if they don't have enough to charges for a special attack or have enough charges in general
+        if ((chargedCharges == 2 && storedCharges < 2) || storedCharges == 0 || chargedCharges == maxCharged) // stops player wasting charges if they don't have enough to charges for a special attack or have enough charges in general
         {
             return;
         }
@@ -193,7 +194,12 @@ public class Player : MonoBehaviour
                 DamageModifier();
                 CritStrike();
                 DamageEnemy();
+                healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
                 Debug.Log("You quickly strike for " + totalDamage + " damage.");
+                if (daggerPoison)
+                {
+                    PoisonStack();
+                }
                 if (didCrit)
                 {
                     Debug.LogError("You critically strike!");
@@ -208,9 +214,19 @@ public class Player : MonoBehaviour
                 baseDamage = normalBase;
                 elementDamage = normalElement;
                 DamageModifier();
+                if (passiveNormal)
+                {
+                    baseDamage = Mathf.CeilToInt(1.5f * baseDamage);
+                    elementDamage = Mathf.CeilToInt(1.5f * elementDamage);
+                }
                 CritStrike();
                 DamageEnemy();
+                healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
                 Debug.Log("You swing at them for " + totalDamage + " damage.");
+                if (daggerPoison)
+                {
+                    PoisonStack();
+                }
                 if (didCrit)
                 {
                     Debug.LogError("You critically strike!");
@@ -226,8 +242,13 @@ public class Player : MonoBehaviour
                 DamageModifier();
                 CritStrike();
                 DamageEnemy();
+                if (daggerPoison)
+                {
+                    enemy.health -= 15 * enemy.poisonStacks;
+                }
+                healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
                 Debug.Log("You lash out with everything for " + totalDamage + " damage.");
-                if (didCrit)
+                if (didCrit && (swordFire || hammerHoly))
                 {
                     Debug.LogError("You critically strike!");
                 }
@@ -241,8 +262,8 @@ public class Player : MonoBehaviour
     /// </summary>
     void DamageModifier() 
     {
-        baseDamage = Mathf.CeilToInt(1.25f * (float)baseDamage);
-        elementDamage = Mathf.CeilToInt(1.25f * (float)elementDamage);
+        baseDamage = baseDamage + Mathf.CeilToInt(baseDamage * (0.25f * (float)playerLevel));
+        elementDamage = elementDamage + Mathf.CeilToInt(elementDamage * (0.25f * (float)playerLevel));
 
         if (swordFire && enemy.isWolf)
         {
@@ -263,6 +284,7 @@ public class Player : MonoBehaviour
         {
             xP -= requiredXP;
             playerLevel++;
+            passivePoints++;
             Debug.Log("You are now level <color=yellow> " + (playerLevel + 1) + "</color>.");
         }
     }
@@ -290,6 +312,7 @@ public class Player : MonoBehaviour
     {
         if (hasAttacked && Input.GetKeyDown(KeyCode.Space))
         {
+            enemy.health -= (playerLevel + 2) * enemy.poisonStacks;
             hasAttacked = false;
             canAttack = true;
             isPlayerTurn = false;
@@ -334,8 +357,9 @@ public class Player : MonoBehaviour
         enemy.health -= totalDamage;
     }
 
-    public void UpdateHealthBar(float health, float maxHealth)
+    void PoisonStack()
     {
-        healthBarFill.fillAmount = health / maxHealth;
+        enemy.poisonStacks++;
+        Debug.Log("The enemy has " + enemy.poisonStacks + " stacks of poison.");
     }
 }
