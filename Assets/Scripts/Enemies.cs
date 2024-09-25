@@ -53,21 +53,21 @@ public class Enemies : MonoBehaviour
             isUndead = true;
             isBandit = false;
             isWolf = false;
-            Debug.Log("An undead groans as it stumbles its way toward you.");
+            Debug.Log("A level " + enemyLevel + " undead groans as it stumbles its way toward you.");
         }
         if (monsterType == 2)
         {
             isUndead = false;
             isBandit = true;
             isWolf = false;
-            Debug.Log("A bandit steps out of the shadows, weapon drawn.");
+            Debug.Log("A level " + enemyLevel + " bandit steps out of the shadows, weapon drawn.");
         }
         if (monsterType == 3)
         {
             isUndead = false;
             isBandit = false;
             isWolf = true;
-            Debug.Log("A lone wolf growls at you from a distance.");
+            Debug.Log("A level " + enemyLevel + " lone wolf growls at you from a distance.");
         }
     }
 
@@ -150,6 +150,7 @@ public class Enemies : MonoBehaviour
                 player.health += healAmount;
                 Debug.Log("You heal for <color=green>" + healAmount + "</color> HP.");
             }
+            healthBarManager.UpdatePlayerHealthBar(player.health, player.maxHealth);
         }
     }
 }

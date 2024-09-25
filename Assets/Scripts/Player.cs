@@ -316,6 +316,7 @@ public class Player : MonoBehaviour
         if (hasAttacked && Input.GetKeyDown(KeyCode.Space))
         {
             enemy.health -= (playerLevel + 2) * enemy.poisonStacks;
+            healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
             hasAttacked = false;
             canAttack = true;
             isPlayerTurn = false;
