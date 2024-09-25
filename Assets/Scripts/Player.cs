@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     public Enemies enemy;
+
+    [SerializeField] private Image healthBarFill;
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -12,10 +15,11 @@ public class Player : MonoBehaviour
     public bool hammerHoly = false;
 
     public int playerLevel = 0;
-    public int playerHealth = 100;
-    public int maxHealth = 100;
-    public int playerXP = 0;
+    public int xP = 0;
     public int requiredXP = 100;
+
+    public float health = 100f;
+    public float maxHealth = 100f;
 
     private int weaponChoice = 1;
     private int passivePoints = 0;
@@ -52,7 +56,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
         PickWeapons();
         ShowControls();
 
@@ -188,18 +192,13 @@ public class Player : MonoBehaviour
                 elementDamage = quickElement;
                 DamageModifier();
                 CritStrike();
-                if (didCrit)
-                {
-                    baseDamage *= 2;
-                }
-                totalDamage = baseDamage + elementDamage;
-                enemy.enemyHP -= totalDamage;
+                DamageEnemy();
                 Debug.Log("You quickly strike for " + totalDamage + " damage.");
                 if (didCrit)
                 {
                     Debug.LogError("You critically strike!");
                 }
-                Debug.Log("They have <color=red>" + enemy.enemyHP + "</color> health remaining.");
+                Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
 
             }
@@ -210,18 +209,13 @@ public class Player : MonoBehaviour
                 elementDamage = normalElement;
                 DamageModifier();
                 CritStrike();
-                if (didCrit)
-                {
-                    baseDamage *= 2;
-                }
-                totalDamage = baseDamage + elementDamage;
-                enemy.enemyHP -= totalDamage;
+                DamageEnemy();
                 Debug.Log("You swing at them for " + totalDamage + " damage.");
                 if (didCrit)
                 {
                     Debug.LogError("You critically strike!");
                 }
-                Debug.Log("They have <color=red>" + enemy.enemyHP + "</color> health remaining.");
+                Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
             }
             if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 4) // Special Attack
@@ -231,18 +225,13 @@ public class Player : MonoBehaviour
                 elementDamage = specialElement;
                 DamageModifier();
                 CritStrike();
-                if (didCrit)
-                {
-                    baseDamage *= 2;
-                }
-                totalDamage = baseDamage + elementDamage;
-                enemy.enemyHP -= totalDamage;
+                DamageEnemy();
                 Debug.Log("You lash out with everything for " + totalDamage + " damage.");
                 if (didCrit)
                 {
                     Debug.LogError("You critically strike!");
                 }
-                Debug.Log("They have <color=red>" + enemy.enemyHP + "</color> health remaining.");
+                Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
             }
         }
@@ -270,9 +259,9 @@ public class Player : MonoBehaviour
     }
     void LevelUp()
     {
-        if (playerXP >= requiredXP && Input.GetKeyDown(KeyCode.L))
+        if (xP >= requiredXP && Input.GetKeyDown(KeyCode.L))
         {
-            playerXP -= requiredXP;
+            xP -= requiredXP;
             playerLevel++;
             Debug.Log("You are now level <color=yellow> " + (playerLevel + 1) + "</color>.");
         }
@@ -315,6 +304,9 @@ public class Player : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Rolls for critical strike, if crit, times base damage by 2
+    /// </summary>
     void CritStrike()
     {
         int roll = Random.Range(1, 21) + playerLevel;
@@ -330,5 +322,20 @@ public class Player : MonoBehaviour
         {
             didCrit = false;
         }
+        if (didCrit)
+        {
+            baseDamage *= 2;
+        }
+    }
+
+    void DamageEnemy()
+    {
+        totalDamage = baseDamage + elementDamage;
+        enemy.health -= totalDamage;
+    }
+
+    public void UpdateHealthBar(float health, float maxHealth)
+    {
+        healthBarFill.fillAmount = health / maxHealth;
     }
 }

@@ -14,15 +14,12 @@ public class Enemies : MonoBehaviour
     public bool isEnemyDead = true;
 
     public int enemyLevel = 1;
-    public int enemyHP = 50;
     public int enemyXP;
 
+    public float health = 50;
+    public float maxHealth = 50;
+
     private int enemyDamage;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -37,7 +34,8 @@ public class Enemies : MonoBehaviour
     {
         isEnemyDead = false;
         enemyLevel = Random.Range((player.playerLevel), (player.playerLevel + 2));
-        enemyHP = 50 + Mathf.CeilToInt(1.5f * (float)enemyLevel);
+        maxHealth = 50 + Mathf.CeilToInt(1.5f * (float)enemyLevel);
+        health = maxHealth;
         enemyXP = 15 * enemyLevel;
         int monsterType = Random.Range(1, 4);
         if (monsterType == 1)
@@ -68,16 +66,17 @@ public class Enemies : MonoBehaviour
         if (isEnemyTurn) 
         {
             enemyDamage = 15 + Random.Range(-5, 5);
-            player.playerHealth -= enemyDamage;
+            player.health -= enemyDamage;
             Debug.Log("You are hit for " + enemyDamage + " damage.");
-            Debug.Log("You have " + player.playerHealth + " health remaining.");
+            Debug.Log("You have " + player.health + " health remaining.");
+            player.UpdateHealthBar(player.health, player.maxHealth);
             isEnemyTurn = false;
             player.isPlayerTurn = true;
         }
     }
     void OnDeath()
     {
-        if (enemyHP <= 0 && isEnemyDead == false)
+        if (health <= 0 && isEnemyDead == false)
         {
             isEnemyDead = true;
             isEnemyTurn = false;
@@ -123,23 +122,25 @@ public class Enemies : MonoBehaviour
             }
             #endregion
             
-            player.playerXP += enemyXP;
+            player.xP += enemyXP;
             Debug.Log("You gain <color=blue>" + enemyXP + " XP</color>.");
-            if (player.playerXP >= player.requiredXP)
+            if (player.xP >= player.requiredXP)
             {
                 Debug.LogWarning("You have enough XP to level up! Press L to level up!");
             }
 
             int healAmount = Mathf.FloorToInt(0.3f * (float)player.maxHealth);
-            if (player.playerHealth > player.maxHealth - healAmount)
+            if (player.health > player.maxHealth - healAmount)
             {
-                player.playerHealth = player.maxHealth;
+                player.health = player.maxHealth;
                 Debug.Log("You feel <color=yellow>fully</color> rejuvinated.");
+                player.UpdateHealthBar(player.health, player.maxHealth);
             }
             else
             {
-                player.playerHealth += healAmount;
-                Debug.Log("You heal for <color=green> " + healAmount + "</color>HP.");
+                player.health += healAmount;
+                Debug.Log("You heal for <color=green>" + healAmount + "</color> HP.");
+                player.UpdateHealthBar(player.health, player.maxHealth);
             }
         }
     }
