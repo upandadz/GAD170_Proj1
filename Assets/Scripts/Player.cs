@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
     public Enemies enemy;
     public HealthBarManager healthBarManager;
     public Image xPBarFill;
+    public TMP_Text chargeCounter;
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -57,6 +59,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         xPBarFill.fillAmount = xP / requiredXP;
+        chargeCounter.text = "Available Charges: " + storedCharges;
         PickWeapons();
         ShowControls();
 

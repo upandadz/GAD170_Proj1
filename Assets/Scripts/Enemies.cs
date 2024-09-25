@@ -2,11 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using TMPro;
 
 public class Enemies : MonoBehaviour
 {
     public Player player;
     public HealthBarManager healthBarManager;
+    public TMP_Text poisonCounter;
 
     public bool isEnemyTurn = false;
     public bool isUndead = false;
@@ -28,6 +30,11 @@ public class Enemies : MonoBehaviour
     {
         Attack();
         OnDeath();
+        if (player.daggerPoison)
+        {
+            poisonCounter.text = "Poison Stacks: " + poisonStacks;
+        }
+
     }
     /// <summary>
     /// randomises level, which in turn effect xp and hp, random enemy type is rolled for as well.
