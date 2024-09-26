@@ -43,7 +43,7 @@ public class Enemies : MonoBehaviour
     {
         isEnemyDead = false;
         enemyLevel = Random.Range((player.playerLevel) + 1, (player.playerLevel + 2));
-        maxHealth = 50 + Mathf.CeilToInt(50 * (0.5f * (float)enemyLevel));
+        maxHealth = 25 + Mathf.CeilToInt(50 * (0.5f * (float)enemyLevel));
         health = maxHealth;
         healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
         enemyXP = Random.Range(10, 16) * enemyLevel;
@@ -90,6 +90,7 @@ public class Enemies : MonoBehaviour
         {
             isEnemyDead = true;
             isEnemyTurn = false;
+            poisonStacks = 0;
           
             #region Debug logs for different weapon/enemy type death texts.
             if (isUndead && player.swordFire)

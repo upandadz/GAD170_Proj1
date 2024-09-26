@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.InteropServices;
 
 public class Player : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class Player : MonoBehaviour
     public HealthBarManager healthBarManager;
     public Image xPBarFill;
     public TMP_Text chargeCounter;
+    public TMP_Text chargedCounter;
+    public TMP_Text perkAvailable;
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -60,6 +63,17 @@ public class Player : MonoBehaviour
     {
         xPBarFill.fillAmount = xP / requiredXP;
         chargeCounter.text = "Available Charges: " + storedCharges;
+        chargedCounter.text = "Charged: " + chargedCharges;
+
+        if (passivePoints > 0) // shows when perk is available
+        {
+            perkAvailable.text = "Perk Point Available";
+        }
+        else
+        {
+            perkAvailable.text = "";
+        }
+
         PickWeapons();
         ShowControls();
 
@@ -316,6 +330,10 @@ public class Player : MonoBehaviour
         if (hasAttacked && Input.GetKeyDown(KeyCode.Space))
         {
             enemy.health -= (playerLevel + 2) * enemy.poisonStacks;
+            if (enemy.isBandit)
+            {
+                enemy.health -= playerLevel + 2 * enemy.poisonStacks; // bandits take 2x poison damage
+            }
             healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
             hasAttacked = false;
             canAttack = true;
