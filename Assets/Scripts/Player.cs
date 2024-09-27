@@ -61,21 +61,12 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        xPBarFill.fillAmount = xP / requiredXP;
         chargeCounter.text = "Available Charges: " + storedCharges;
         chargedCounter.text = "Charged: " + chargedCharges;
 
-        if (passivePoints > 0) // shows when perk is available
-        {
-            perkAvailable.text = "Perk Point Available";
-        }
-        else
-        {
-            perkAvailable.text = "";
-        }
-
         PickWeapons();
         ShowControls();
+        XPBar();
 
         // if you have selected a weapon type and an enemy is dead, spawn a mob & roll for first turn
         if ((swordFire || daggerPoison || hammerHoly) && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space))
@@ -253,21 +244,29 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 4) // Special Attack
             {
+                int poisonDamage = 15 * enemy.poisonStacks;
                 chargedCharges -= 4;
                 baseDamage = specialBase;
                 elementDamage = specialElement;
                 DamageModifier();
                 CritStrike();
                 DamageEnemy();
-                if (daggerPoison)
+                if (enemy.isBandit)
                 {
-                    enemy.health -= 15 * enemy.poisonStacks;
+                    poisonDamage *= 2;
                 }
+                enemy.health -= poisonDamage;
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
-                Debug.Log("You lash out with everything for " + totalDamage + " damage.");
+
                 if (didCrit && (swordFire || hammerHoly))
                 {
+                    Debug.Log("You lash out with everything for " + totalDamage + " damage.");
                     Debug.LogError("You critically strike!");
+                }
+                else
+                {
+                    Debug.Log("Your poisons boil in their blood for " + poisonDamage + " damage.");
+                    enemy.poisonStacks = 0;
                 }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
@@ -383,5 +382,27 @@ public class Player : MonoBehaviour
     {
         enemy.poisonStacks++;
         Debug.Log("The enemy has " + enemy.poisonStacks + " stacks of poison.");
+    }
+
+    void XPBar()
+    {
+        xPBarFill.fillAmount = xP / requiredXP;
+        if (passivePoints > 0) // shows when perk is available
+        {
+            perkAvailable.text = "Perk Point Available";
+        }
+        else
+        {
+            perkAvailable.text = "";
+        }
+
+        if (xP >= requiredXP)
+        {
+            xPBarFill.color = new Color(1, 0.9104f, 0.1179f, 1);
+        }
+        else
+        {
+            xPBarFill.color = new Color(0, 0.0960f, 0.7830f, 1);
+        }
     }
 }
