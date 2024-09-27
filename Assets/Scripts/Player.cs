@@ -9,10 +9,12 @@ public class Player : MonoBehaviour
 {
     public Enemies enemy;
     public HealthBarManager healthBarManager;
+    public RoomManager roomManager;
     public Image xPBarFill;
     public TMP_Text chargeCounter;
     public TMP_Text chargedCounter;
     public TMP_Text perkAvailable;
+    public TMP_Text levelUpText;
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -20,6 +22,8 @@ public class Player : MonoBehaviour
     public bool hammerHoly = false;
 
     public int playerLevel = 0;
+    public int storedCharges = 2;
+    public int chargeRegen = 2;
 
     public float xP = 0;
     public float requiredXP = 100;
@@ -33,11 +37,11 @@ public class Player : MonoBehaviour
     private int elementDamage;
     private int totalDamage;
 
-    private int storedCharges = 2;
+
     private int maxStored = 6;
     private int chargedCharges = 0;
     private int maxCharged = 4;
-    private int chargeRegen = 2;
+
 
     private bool didCrit = false;
     private bool hasAttacked = false;
@@ -49,16 +53,13 @@ public class Player : MonoBehaviour
     private bool passiveLuck = false;
 
 
-
-    // Start is called before the first frame update
     void Start()
     {
         Debug.Log("You awaken in a damp dim lit cave, unsure how you got there.");
-        Debug.Log("Before you on the ground lay 3 weapons, a sword, a set of daggers, and a warhammer.");
+        Debug.Log("Before you on the ground lay 3 weapons, a <color=red>sword</color>, a set of <color=green>daggers</color>, and a <color=yellow>warhammer</color>.");
         Debug.Log("Press 1 to grab the sword, 2 to grab the daggers, 3 to grab the warhammer.");
     }
 
-    // Update is called once per frame
     void Update()
     {
         chargeCounter.text = "Available Charges: " + storedCharges;
@@ -146,7 +147,8 @@ public class Player : MonoBehaviour
             Debug.Log("In combat, press A to charge up.");
             Debug.Log("1 charge performs a quick attack, 2 a normal attack, 4 charges a special attack.");
             Debug.Log("A player may only have 6 charges at any given time, a player recieves 2 charges per round.");
-            Debug.Log("Once charged up, press ENTER to attack, once you wish to end your turn press SPACEBAR");
+            Debug.Log("Once charged up, press ENTER to attack, once you wish to end your turn or search for another enemy press SPACEBAR");
+            Debug.Log("After an enemy has been defeated, press an arrow key to go for a wonder. See what you can find!");
         }
     }
     void SwordAttacks() // Attack list for sword type
@@ -298,10 +300,15 @@ public class Player : MonoBehaviour
     {
         if (xP >= requiredXP && Input.GetKeyDown(KeyCode.L))
         {
+            levelUpText.text = "Level Up!";
             xP -= requiredXP;
             playerLevel++;
             passivePoints++;
             Debug.Log("You are now level <color=yellow> " + (playerLevel + 1) + "</color>.");
+        }
+        else
+        {
+            levelUpText.text = "";
         }
     }
     /// <summary>
@@ -384,7 +391,7 @@ public class Player : MonoBehaviour
         Debug.Log("The enemy has " + enemy.poisonStacks + " stacks of poison.");
     }
 
-    void XPBar()
+    public void XPBar()
     {
         xPBarFill.fillAmount = xP / requiredXP;
         if (passivePoints > 0) // shows when perk is available

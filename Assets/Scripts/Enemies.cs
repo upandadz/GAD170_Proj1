@@ -9,6 +9,7 @@ public class Enemies : MonoBehaviour
     public Player player;
     public HealthBarManager healthBarManager;
     public TMP_Text poisonCounter;
+    public RoomManager roomManager;
 
     public bool isEnemyTurn = false;
     public bool isUndead = false;
@@ -91,7 +92,7 @@ public class Enemies : MonoBehaviour
             isEnemyDead = true;
             isEnemyTurn = false;
             poisonStacks = 0;
-          
+            roomManager.canWalk = true;
             #region Debug logs for different weapon/enemy type death texts.
             if (isUndead && player.swordFire)
             {
