@@ -61,19 +61,28 @@ public class RoomManager : MonoBehaviour
                 if (dropRoll == 1) // XP drop
                 {
                     Debug.Log("During your travels you gained confidence in your abilities.");
-                    player.xP += 15 * player.playerLevel;
+                    player.xP += 25 + 25 * player.playerLevel;
+                    Debug.Log("You gain <color=blue>" + (25 + 25 * player.playerLevel) + "</color> XP.");
                     player.XPBar();
                 }
                 if (dropRoll == 2) // HP drop
                 {
                     Debug.Log("A long walk is just what you needed, you feel rejuvinated.");
                     player.health += Mathf.CeilToInt(0.3f * player.maxHealth);
+                    if (player.health > player.maxHealth)
+                    {
+                        player.health = player.maxHealth;
+                    }
                     healthBarManager.UpdatePlayerHealthBar(player.health, player.maxHealth);
                 }
                 if (dropRoll == 3) // Charges drop
                 {
                     Debug.Log("You feel hungry & ready to face anything.");
                     player.storedCharges += player.chargeRegen;
+                    if (player.storedCharges > player.maxStored)
+                    {
+                        player.storedCharges = player.maxStored;
+                    }
                 }
             }
         }

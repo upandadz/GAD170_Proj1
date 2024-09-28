@@ -47,7 +47,7 @@ public class Enemies : MonoBehaviour
         maxHealth = 25 + Mathf.CeilToInt(50 * (0.5f * (float)enemyLevel));
         health = maxHealth;
         healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
-        enemyXP = Random.Range(10, 16) * enemyLevel;
+        enemyXP = Random.Range(15, 26) * enemyLevel;
         int monsterType = Random.Range(1, 4);
         if (monsterType == 1)
         {

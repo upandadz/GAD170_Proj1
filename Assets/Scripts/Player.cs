@@ -24,6 +24,7 @@ public class Player : MonoBehaviour
     public int playerLevel = 0;
     public int storedCharges = 2;
     public int chargeRegen = 2;
+    public int maxStored = 6;
 
     public float xP = 0;
     public float requiredXP = 100;
@@ -37,11 +38,8 @@ public class Player : MonoBehaviour
     private int elementDamage;
     private int totalDamage;
 
-
-    private int maxStored = 6;
     private int chargedCharges = 0;
     private int maxCharged = 4;
-
 
     private bool didCrit = false;
     private bool hasAttacked = false;
@@ -86,6 +84,7 @@ public class Player : MonoBehaviour
         HammerAttacks();
         EndTurn();
         LevelUp();
+        PerkPick();
     }
 
     void PickWeapons() // allows the player to press a button to choose a weapon at the start
@@ -205,7 +204,7 @@ public class Player : MonoBehaviour
                 CritStrike();
                 DamageEnemy();
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
-                Debug.Log("You quickly strike for " + totalDamage + " damage.");
+                Debug.Log("You quickly strike for <color=red>" + totalDamage + "</color> damage.");
                 if (daggerPoison)
                 {
                     PoisonStack();
@@ -232,7 +231,7 @@ public class Player : MonoBehaviour
                 CritStrike();
                 DamageEnemy();
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
-                Debug.Log("You swing at them for " + totalDamage + " damage.");
+                Debug.Log("You swing at them for <color=red>" + totalDamage + "</color> damage.");
                 if (daggerPoison)
                 {
                     PoisonStack();
@@ -262,12 +261,16 @@ public class Player : MonoBehaviour
 
                 if (didCrit && (swordFire || hammerHoly))
                 {
-                    Debug.Log("You lash out with everything for " + totalDamage + " damage.");
+                    Debug.Log("You lash out with everything for <color=red>" + totalDamage + "</color> damage.");
                     Debug.LogError("You critically strike!");
+                }
+                else if (swordFire || hammerHoly)
+                {
+                    Debug.Log("You lash out with everything for <color=red>" + totalDamage + "</color> damage.");
                 }
                 else
                 {
-                    Debug.Log("Your poisons boil in their blood for " + poisonDamage + " damage.");
+                    Debug.Log("Your poisons boil in their blood for <color=green>" + poisonDamage + "</color> damage.");
                     enemy.poisonStacks = 0;
                 }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
@@ -296,21 +299,66 @@ public class Player : MonoBehaviour
             elementDamage *= 2;
         }
     }
+    /// <summary>
+    /// Press L to level up, also shows text on screen when enough xp to level up
+    /// </summary>
     void LevelUp()
     {
-        if (xP >= requiredXP && Input.GetKeyDown(KeyCode.L))
+        if (xP >= requiredXP)
         {
             levelUpText.text = "Level Up!";
-            xP -= requiredXP;
-            playerLevel++;
-            passivePoints++;
-            Debug.Log("You are now level <color=yellow> " + (playerLevel + 1) + "</color>.");
+
+            if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead)
+            {
+                xP -= requiredXP;
+                requiredXP += 100;
+                playerLevel++;
+                passivePoints++;
+                maxHealth += 50;
+                health = maxHealth;
+                healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
+                Debug.Log("You are now level <color=yellow>" + (playerLevel + 1) + "</color>.");
+                Debug.Log("You have gained a perk point.");
+                Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
+            }
         }
         else
         {
             levelUpText.text = "";
         }
     }
+
+    void PerkPick()
+    {
+        if (passivePoints > 0 && enemy.isEnemyDead)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1) && !passiveQuick)
+            {
+                passivePoints--;
+                passiveQuick = true;
+                Debug.Log("You have gained the quick perk, you can now continue to attack as long as you have charges.");
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2) && !passiveNormal)
+            {
+                passivePoints--;
+                passiveNormal = true;
+                Debug.Log("You have gained the normal attack perk, your normal attacks now do 1.5 x damage.");
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3) && !passiveCharges)
+            {
+                passivePoints--;
+                passiveCharges = true;
+                Debug.Log("You now gain 3 charges per round.");
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4) && !passiveLuck)
+            {
+                passivePoints--;
+                passiveLuck = true;
+                Debug.Log("You have gained the luck perk, you may find everything to be a bit easier now.");
+            }
+        }
+    }
+
     /// <summary>
     /// If they have the quick passive they can continue to attack untill they end their turn.
     /// </summary>
