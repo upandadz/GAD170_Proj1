@@ -43,7 +43,7 @@ public class Enemies : MonoBehaviour
     public void RandomiseStats() 
     {
         isEnemyDead = false;
-        enemyLevel = Random.Range((player.playerLevel) + 1, (player.playerLevel + 2));
+        enemyLevel = Random.Range((player.playerLevel) + 1, (player.playerLevel + 4));
         maxHealth = 25 + Mathf.CeilToInt(50 * (0.5f * (float)enemyLevel));
         health = maxHealth;
         healthBarManager.UpdateEnemyHealthBar(health, maxHealth);

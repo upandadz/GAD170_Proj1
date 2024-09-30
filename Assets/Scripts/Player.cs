@@ -15,6 +15,12 @@ public class Player : MonoBehaviour
     public TMP_Text chargedCounter;
     public TMP_Text perkAvailable;
     public TMP_Text levelUpText;
+    public TMP_Text quick;
+    public TMP_Text normal;
+    public TMP_Text charges;
+    public TMP_Text lucky;
+    public TMP_Text playerLvlText;
+    public TMP_Text enemyLvlText;
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -60,9 +66,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        chargeCounter.text = "Available Charges: " + storedCharges;
-        chargedCounter.text = "Charged: " + chargedCharges;
-
+        OnScreenText();
         PickWeapons();
         ShowControls();
         XPBar();
@@ -304,11 +308,8 @@ public class Player : MonoBehaviour
     /// </summary>
     void LevelUp()
     {
-        if (xP >= requiredXP)
-        {
-            levelUpText.text = "Level Up!";
 
-            if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead)
+            if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP)
             {
                 xP -= requiredXP;
                 requiredXP += 100;
@@ -321,11 +322,6 @@ public class Player : MonoBehaviour
                 Debug.Log("You have gained a perk point.");
                 Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
             }
-        }
-        else
-        {
-            levelUpText.text = "";
-        }
     }
 
     void PerkPick()
@@ -442,14 +438,6 @@ public class Player : MonoBehaviour
     public void XPBar()
     {
         xPBarFill.fillAmount = xP / requiredXP;
-        if (passivePoints > 0) // shows when perk is available
-        {
-            perkAvailable.text = "Perk Point Available";
-        }
-        else
-        {
-            perkAvailable.text = "";
-        }
 
         if (xP >= requiredXP)
         {
@@ -459,5 +447,68 @@ public class Player : MonoBehaviour
         {
             xPBarFill.color = new Color(0, 0.0960f, 0.7830f, 1);
         }
+    }
+
+    void OnScreenText()
+    {
+        if (xP >= requiredXP)
+        {
+            levelUpText.text = "Level Up!";
+        }
+        else
+        {
+            levelUpText.text = "";
+        }
+
+        chargeCounter.text = "Available Charges: " + storedCharges;
+        chargedCounter.text = "Charged: " + chargedCharges;
+
+        if (passivePoints > 0) // shows when perk is available
+        {
+            perkAvailable.text = "Perk Point Available";
+        }
+        else
+        {
+            perkAvailable.text = "";
+        }
+
+        if (passiveQuick)
+        {
+            quick.text = "Quick";
+        }
+        else
+        {
+            quick.text = "";
+        }
+
+        if (passiveNormal)
+        {
+            normal.text = "Normal";
+        }
+        else
+        {
+            normal.text = "";
+        }
+
+        if (passiveCharges)
+        {
+            charges.text = "Charges";
+        }
+        else
+        {
+            charges.text = "";
+        }
+
+        if (passiveLuck)
+        {
+            lucky.text = "Lucky";
+        }
+        else
+        {
+            lucky.text = "";
+        }
+
+        playerLvlText.text = "Lv" + (playerLevel + 1);
+        enemyLvlText.text = "Lv" + enemy.enemyLevel;
     }
 }
