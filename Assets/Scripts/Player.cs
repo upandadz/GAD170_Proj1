@@ -34,8 +34,8 @@ public class Player : MonoBehaviour
 
     public float xP = 0;
     public float requiredXP = 100;
-    public float health = 100f;
-    public float maxHealth = 100f;
+    public float health = 150f;
+    public float maxHealth = 150f;
 
     private int weaponChoice = 1;
     private int passivePoints = 0;
@@ -72,9 +72,14 @@ public class Player : MonoBehaviour
         XPBar();
 
         // if you have selected a weapon type and an enemy is dead, spawn a mob & roll for first turn
-        if ((swordFire || daggerPoison || hammerHoly) && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space))
+        if ((swordFire || daggerPoison || hammerHoly) && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space) && playerLevel < 4)
         {
             enemy.RandomiseStats();
+            FirstTurnRoll();
+        }
+        else if (playerLevel == 4 && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space))
+        {
+            enemy.SpawnBoss();
             FirstTurnRoll();
         }
 
@@ -168,7 +173,7 @@ public class Player : MonoBehaviour
         if (daggerPoison == true)
         {
             ChargeAttack();
-            Attacks(3, 2, 7, 4, 0, 0);
+            Attacks(3, 2, 7, 10, 0, 0);
         }
     }
 
@@ -177,21 +182,24 @@ public class Player : MonoBehaviour
         if (hammerHoly == true)
         {
             ChargeAttack();
-            Attacks(4, 4, 8, 10, 30, 30);
+            Attacks(5, 5, 8, 14, 35, 35);
         }
     }
 
     void ChargeAttack()
     {
-        if ((chargedCharges == 2 && storedCharges < 2) || storedCharges == 0 || chargedCharges == maxCharged) // stops player wasting charges if they don't have enough to charges for a special attack or have enough charges in general
+        if (enemy.isEnemyDead == false)
         {
-            return;
-        }
-        else if (Input.GetKeyDown(KeyCode.A) && storedCharges >= 1 && isPlayerTurn && canAttack)
-        {
-            storedCharges -= 1;
-            chargedCharges++;
-            Debug.Log("You charge up, total charges: " + chargedCharges + '.');
+            if ((chargedCharges == 2 && storedCharges < 2) || storedCharges == 0 || chargedCharges == maxCharged) // stops player wasting charges if they don't have enough to charges for a special attack or have enough charges in general
+            {
+                return;
+            }
+            else if (Input.GetKeyDown(KeyCode.A) && storedCharges >= 1 && isPlayerTurn && canAttack)
+            {
+                storedCharges -= 1;
+                chargedCharges++;
+                Debug.Log("You charge up, total charges: " + chargedCharges + '.');
+            }
         }
     }
 
@@ -206,6 +214,7 @@ public class Player : MonoBehaviour
                 elementDamage = quickElement;
                 DamageModifier();
                 CritStrike();
+                SwordHeal();
                 DamageEnemy();
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
                 Debug.Log("You quickly strike for <color=red>" + totalDamage + "</color> damage.");
@@ -233,6 +242,7 @@ public class Player : MonoBehaviour
                     elementDamage = Mathf.CeilToInt(1.5f * elementDamage);
                 }
                 CritStrike();
+                SwordHeal();
                 DamageEnemy();
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
                 Debug.Log("You swing at them for <color=red>" + totalDamage + "</color> damage.");
@@ -255,6 +265,7 @@ public class Player : MonoBehaviour
                 elementDamage = specialElement;
                 DamageModifier();
                 CritStrike();
+                SwordHeal();
                 DamageEnemy();
                 if (enemy.isBandit)
                 {
@@ -308,20 +319,32 @@ public class Player : MonoBehaviour
     /// </summary>
     void LevelUp()
     {
-
-            if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP)
-            {
-                xP -= requiredXP;
-                requiredXP += 100;
-                playerLevel++;
-                passivePoints++;
-                maxHealth += 50;
-                health = maxHealth;
-                healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
-                Debug.Log("You are now level <color=yellow>" + (playerLevel + 1) + "</color>.");
-                Debug.Log("You have gained a perk point.");
-                Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
-            }
+        if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP && playerLevel == 3)
+        {
+            xP -= xP;
+            requiredXP += 100;
+            playerLevel++;
+            passivePoints++;
+            maxHealth += 60;
+            health = maxHealth;
+            healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
+            Debug.Log("You have gained a perk point.");
+            Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
+            Debug.Log("You are now level 5, defeat the boss before you finish the game.");
+        }
+        else if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP)
+        {
+            xP -= requiredXP;
+            requiredXP += 100;
+            playerLevel++;
+            passivePoints++;
+            maxHealth += 60;
+            health = maxHealth;
+            healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
+            Debug.Log("You are now level <color=yellow>" + (playerLevel + 1) + "</color>.");
+            Debug.Log("You have gained a perk point.");
+            Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
+        }
     }
 
     void PerkPick()
@@ -379,10 +402,10 @@ public class Player : MonoBehaviour
     {
         if (hasAttacked && Input.GetKeyDown(KeyCode.Space))
         {
-            enemy.health -= (playerLevel + 2) * enemy.poisonStacks;
+            enemy.health -= (playerLevel + 5) * enemy.poisonStacks;
             if (enemy.isBandit)
             {
-                enemy.health -= playerLevel + 2 * enemy.poisonStacks; // bandits take 2x poison damage
+                enemy.health -= playerLevel + 5 * enemy.poisonStacks; // bandits take 2x poison damage
             }
             healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
             hasAttacked = false;
@@ -510,5 +533,16 @@ public class Player : MonoBehaviour
 
         playerLvlText.text = "Lv" + (playerLevel + 1);
         enemyLvlText.text = "Lv" + enemy.enemyLevel;
+    }
+    /// <summary>
+    /// Allows sword/fire to heal on critical strikes
+    /// </summary>
+    void SwordHeal()
+    {
+        if (didCrit && swordFire)
+        {
+            health += 5 * playerLevel;
+        }
+        healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
     }
 }
