@@ -2583,6 +2583,7 @@ MonoBehaviour:
   isBandit: 0
   isWolf: 0
   isEnemyDead: 1
+  isBossSpawned: 0
   enemyLevel: 1
   enemyXP: 0
   poisonStacks: 0
