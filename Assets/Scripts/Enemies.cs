@@ -9,6 +9,7 @@ public class Enemies : MonoBehaviour
     public Player player;
     public HealthBarManager healthBarManager;
     public TMP_Text poisonCounter;
+    public GameManager gameManager;
     public RoomManager roomManager;
 
     public bool isEnemyTurn = false;
@@ -98,7 +99,8 @@ public class Enemies : MonoBehaviour
             if (isBossSpawned)
             {
                 isEnemyDead = true;
-                Debug.Log("You have defeated ... & finished the game! You should give this game a high distinction!");
+                Debug.Log("You have defeated the wearwolf & finished the game! You should give this game a high distinction!");
+                gameManager.restartGameButton.SetActive(true);
             }
             else
             {
@@ -178,7 +180,7 @@ public class Enemies : MonoBehaviour
         isBandit = false;
         isWolf = false;
         isUndead = false;
-        maxHealth = 300;
+        maxHealth = 400;
         health = maxHealth;
         Debug.Log("You hear a thunderous howl as what appears to be a wolf walking on two legs bounds towards you!");
     }
@@ -189,9 +191,10 @@ public class Enemies : MonoBehaviour
         {
             if (health == 0.25f * maxHealth)
             {
-                Debug.Log("The beast is frightened! They howl at the moon to regain strength.");
+                Debug.Log("The beast is frightened! It howls at the moon to regain strength.");
                 health += 30;
                 healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
+                Attack();
             }
             else
             {

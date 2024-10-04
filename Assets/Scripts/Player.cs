@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 {
     public Enemies enemy;
     public HealthBarManager healthBarManager;
+    public GameManager gameManager;
     public RoomManager roomManager;
     public Image xPBarFill;
     public TMP_Text chargeCounter;
@@ -26,6 +27,8 @@ public class Player : MonoBehaviour
     public bool swordFire = false;
     public bool daggerPoison = false;
     public bool hammerHoly = false;
+    public bool canAttack = false;
+    public bool isAlive = true;
 
     public int playerLevel = 0;
     public int storedCharges = 2;
@@ -49,38 +52,35 @@ public class Player : MonoBehaviour
 
     private bool didCrit = false;
     private bool hasAttacked = false;
-    private bool canAttack = false;
+
 
     private bool passiveQuick = false;
     private bool passiveNormal = false;
     private bool passiveCharges = false;
-    private bool passiveLuck = false;
+    public bool passiveLuck = false;
 
 
     void Start()
     {
-        Debug.Log("You awaken in a damp dim lit cave, unsure how you got there.");
-        Debug.Log("Before you on the ground lay 3 weapons, a <color=red>sword</color>, a set of <color=green>daggers</color>, and a <color=yellow>warhammer</color>.");
-        Debug.Log("Press 1 to grab the sword, 2 to grab the daggers, 3 to grab the warhammer.");
+
     }
 
     void Update()
     {
         OnScreenText();
         PickWeapons();
-        ShowControls();
         XPBar();
 
         // if you have selected a weapon type and an enemy is dead, spawn a mob & roll for first turn
         if ((swordFire || daggerPoison || hammerHoly) && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space) && playerLevel < 4)
         {
             enemy.RandomiseStats();
-            FirstTurnRoll();
+            gameManager.FirstTurnRoll();
         }
         else if (playerLevel == 4 && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space))
         {
             enemy.SpawnBoss();
-            FirstTurnRoll();
+            gameManager.FirstTurnRoll();
         }
 
         if (passiveCharges)
@@ -129,36 +129,6 @@ public class Player : MonoBehaviour
         
     }
 
-    void FirstTurnRoll() // rolls for first turn, taking into account luck passive effect
-    {
-        int roll = Random.Range(1, 21);
-        if (passiveLuck == true)
-        {
-            roll += 4;
-        }
-        if (roll > 10)
-        {
-            isPlayerTurn = true;
-        }
-        else
-        {
-            enemy.isEnemyTurn = true;
-            isPlayerTurn = false;
-        }
-        canAttack = true;
-    }
-
-    void ShowControls()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Debug.Log("In combat, press A to charge up.");
-            Debug.Log("1 charge performs a quick attack, 2 a normal attack, 4 charges a special attack.");
-            Debug.Log("A player may only have 6 charges at any given time, a player recieves 2 charges per round.");
-            Debug.Log("Once charged up, press ENTER to attack, once you wish to end your turn or search for another enemy press SPACEBAR");
-            Debug.Log("After an enemy has been defeated, press an arrow key to go for a wonder. See what you can find!");
-        }
-    }
     void SwordAttacks() // Attack list for sword type
     {
         if (swordFire == true)
@@ -188,7 +158,7 @@ public class Player : MonoBehaviour
 
     void ChargeAttack()
     {
-        if (enemy.isEnemyDead == false)
+        if (isAlive && enemy.isEnemyDead == false)
         {
             if ((chargedCharges == 2 && storedCharges < 2) || storedCharges == 0 || chargedCharges == maxCharged) // stops player wasting charges if they don't have enough to charges for a special attack or have enough charges in general
             {
@@ -205,7 +175,7 @@ public class Player : MonoBehaviour
 
     void Attacks(int quickBase, int quickElement, int normalBase, int normalElement, int specialBase, int specialElement)
     {
-        if (isPlayerTurn && enemy.isEnemyDead == false && canAttack)
+        if (isPlayerTurn && enemy.isEnemyDead == false && canAttack && isAlive)
         {
             if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 1) // Quick Attack
             {
@@ -259,7 +229,7 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 4) // Special Attack
             {
-                int poisonDamage = 15 * enemy.poisonStacks;
+                int poisonDamage = (15 + 3 * playerLevel) * enemy.poisonStacks;
                 chargedCharges -= 4;
                 baseDamage = specialBase;
                 elementDamage = specialElement;
