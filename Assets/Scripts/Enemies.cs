@@ -189,7 +189,7 @@ public class Enemies : MonoBehaviour
     {
         if (isEnemyTurn && isBossSpawned)
         {
-            if (health == 0.25f * maxHealth)
+            if (health <= 0.3f * maxHealth)
             {
                 Debug.Log("The beast is frightened! It howls at the moon to regain strength.");
                 health += 30;
