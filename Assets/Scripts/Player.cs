@@ -134,7 +134,7 @@ public class Player : MonoBehaviour
         if (swordFire == true)
         {
             ChargeAttack();
-            Attacks(5, 4, 10, 10, 25, 20);
+            Attacks(5, 4, 10, 10, 15, 25);
         }
     }
 
@@ -143,7 +143,7 @@ public class Player : MonoBehaviour
         if (daggerPoison == true)
         {
             ChargeAttack();
-            Attacks(3, 2, 7, 10, 0, 0);
+            Attacks(3, 4, 7, 10, 20, 20);
         }
     }
 
@@ -229,7 +229,7 @@ public class Player : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 4) // Special Attack
             {
-                int poisonDamage = (15 + 3 * playerLevel) * enemy.poisonStacks;
+                int poisonDamage = (3 * playerLevel) * enemy.poisonStacks;
                 chargedCharges -= 4;
                 baseDamage = specialBase;
                 elementDamage = specialElement;
@@ -255,8 +255,9 @@ public class Player : MonoBehaviour
                 }
                 else
                 {
+                    Debug.Log("You slash as them with a flurry of strikes!");
                     Debug.Log("Your poisons boil in their blood for <color=green>" + poisonDamage + "</color> damage.");
-                    enemy.poisonStacks = 0;
+                    enemy.poisonStacks += 5;
                 }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
@@ -402,6 +403,10 @@ public class Player : MonoBehaviour
         {
             roll += 4;
         }
+        if (swordFire)
+        {
+            roll += 4;
+        }
         if (roll >= 20)
         {
             didCrit = true;
@@ -511,8 +516,10 @@ public class Player : MonoBehaviour
     {
         if (didCrit && swordFire)
         {
-            health += 5 * playerLevel;
+            health += 5 * (playerLevel + 1);
+            Debug.Log("Your critical strikes fuels your bloodlust! You heal for <color=green> " + (5 * (playerLevel + 1)) + "</color> HP.");
         }
+
         healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
     }
 }

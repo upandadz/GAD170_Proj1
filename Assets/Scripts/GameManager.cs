@@ -27,15 +27,23 @@ public class GameManager : MonoBehaviour
         ShowControls();
         OnPlayerDeath();
     }
-    void ShowControls()
+    void ShowControls() // Debug logs that show controlls/Perk info
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            Debug.Log("In combat, press A to charge up.");
+            Debug.Log("In combat, press <color=red>A</color> to charge up.");
             Debug.Log("1 charge performs a quick attack, 2 a normal attack, 4 charges a special attack.");
             Debug.Log("A player may only have 6 charges at any given time, a player recieves 2 charges per round.");
-            Debug.Log("Once charged up, press ENTER to attack, once you wish to end your turn or search for another enemy press SPACEBAR");
-            Debug.Log("After an enemy has been defeated, press an arrow key to go for a wonder. See what you can find!");
+            Debug.Log("Once charged up, press <color=red>ENTER</color> to attack, once you wish to end your turn or search for another enemy press <color=red>SPACEBAR</color>.");
+            Debug.Log("After an enemy has been defeated, press an arrow key to go for a wonder. See what you find!");
+            Debug.Log("Press <color=yellow>P</color> to see what the different perks do.");
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log("The Quick perk allows you to attack as many times as you like before you end your turn.");
+            Debug.Log("The Normal perk increases your normal attack damage by 1.5x.");
+            Debug.Log("The Charges perk gives you 3 charges per round instead of 2.");
+            Debug.Log("The Lucky perk increases your chance to crit & chance to attack first.");
         }
     }
 
