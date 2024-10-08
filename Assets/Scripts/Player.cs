@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using System.Runtime.InteropServices;
 
 public class Player : MonoBehaviour
 {
@@ -275,28 +273,18 @@ public class Player : MonoBehaviour
     /// </summary>
     void LevelUp()
     {
-        if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP && playerLevel == 3)
+        if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP && playerLevel == 3) // if player is lvl 4, different debug logs & completely resets XP bar
         {
             xP -= xP;
-            requiredXP += 100;
-            playerLevel++;
-            passivePoints++;
-            maxHealth += 60;
-            health = maxHealth;
-            healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
+            AddStats();
             Debug.Log("You have gained a perk point.");
             Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
-            Debug.Log("You are now level 5, defeat the boss before you finish the game.");
+            Debug.Log("You are now level <color=yellow>5</color>, defeat the boss before you finish the game.");
         }
         else if (Input.GetKeyDown(KeyCode.L) && enemy.isEnemyDead && xP >= requiredXP)
         {
             xP -= requiredXP;
-            requiredXP += 100;
-            playerLevel++;
-            passivePoints++;
-            maxHealth += 60;
-            health = maxHealth;
-            healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
+            AddStats();
             Debug.Log("You are now level <color=yellow>" + (playerLevel + 1) + "</color>.");
             Debug.Log("You have gained a perk point.");
             Debug.Log("Press 1 for the Quick perk, 2 for the Normal attack perk, 3 to gain 3 charges per round, or 4 for the Luck perk.");
@@ -445,6 +433,18 @@ public class Player : MonoBehaviour
             Debug.Log("Your critical strikes fuels your bloodlust! You heal for <color=green> " + (5 * (playerLevel + 1)) + "</color> HP.");
         }
 
+        healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
+    }
+    /// <summary>
+    /// takes away XP, increases lvl, adds stats, updates healthbar
+    /// </summary>
+    void AddStats()
+    {
+        requiredXP += 100;
+        playerLevel++;
+        passivePoints++;
+        maxHealth += 60;
+        health = maxHealth;
         healthBarManager.UpdatePlayerHealthBar(health, maxHealth);
     }
 }
