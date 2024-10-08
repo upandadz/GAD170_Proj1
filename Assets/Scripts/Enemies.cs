@@ -83,7 +83,11 @@ public class Enemies : MonoBehaviour
         if (isEnemyTurn) 
         {
             enemyDamage = 10 + Random.Range(-5, 5);
-            enemyDamage += Mathf.CeilToInt((float)enemyLevel * 0.25f * (float)enemyDamage);
+            enemyDamage += Mathf.CeilToInt((float)enemyLevel * 0.25f * (float)enemyDamage); // changes damage based on enemy level
+            if (isBossSpawned)
+            {
+                enemyDamage *= 2;
+            }
             player.health -= enemyDamage;
             Debug.Log("You are hit for " + enemyDamage + " damage.");
             Debug.Log("You have " + player.health + " health remaining.");
@@ -192,7 +196,7 @@ public class Enemies : MonoBehaviour
             if (health <= 0.3f * maxHealth)
             {
                 Debug.Log("The beast is frightened! It howls at the moon to regain strength.");
-                health += 30;
+                health += 50;
                 healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
                 Attack();
             }

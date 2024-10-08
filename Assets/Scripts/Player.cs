@@ -12,16 +12,7 @@ public class Player : MonoBehaviour
     public GameManager gameManager;
     public RoomManager roomManager;
     public Image xPBarFill;
-    public TMP_Text chargeCounter;
-    public TMP_Text chargedCounter;
-    public TMP_Text perkAvailable;
-    public TMP_Text levelUpText;
-    public TMP_Text quick;
-    public TMP_Text normal;
-    public TMP_Text charges;
-    public TMP_Text lucky;
-    public TMP_Text playerLvlText;
-    public TMP_Text enemyLvlText;
+
 
     public bool isPlayerTurn = false;
     public bool swordFire = false;
@@ -29,11 +20,18 @@ public class Player : MonoBehaviour
     public bool hammerHoly = false;
     public bool canAttack = false;
     public bool isAlive = true;
+    public bool passiveLuck = false;
+    public bool passiveQuick = false;
+    public bool passiveNormal = false;
+    public bool passiveCharges = false;
+    public bool hasAttacked = false;
 
     public int playerLevel = 0;
     public int storedCharges = 2;
     public int chargeRegen = 2;
     public int maxStored = 6;
+    public int chargedCharges = 0;
+    public int passivePoints = 0;
 
     public float xP = 0;
     public float requiredXP = 100;
@@ -41,33 +39,15 @@ public class Player : MonoBehaviour
     public float maxHealth = 150f;
 
     private int weaponChoice = 1;
-    private int passivePoints = 0;
-
+    private int maxCharged = 4;
     private int baseDamage;
     private int elementDamage;
     private int totalDamage;
 
-    private int chargedCharges = 0;
-    private int maxCharged = 4;
-
     private bool didCrit = false;
-    private bool hasAttacked = false;
-
-
-    private bool passiveQuick = false;
-    private bool passiveNormal = false;
-    private bool passiveCharges = false;
-    public bool passiveLuck = false;
-
-
-    void Start()
-    {
-
-    }
 
     void Update()
     {
-        OnScreenText();
         PickWeapons();
         XPBar();
 
@@ -253,10 +233,15 @@ public class Player : MonoBehaviour
                 {
                     Debug.Log("You lash out with everything for <color=red>" + totalDamage + "</color> damage.");
                 }
+                else if (enemy.poisonStacks > 0)
+                {
+                    Debug.Log("You slash as them with a flurry of strikes! You deal <color=red>" + totalDamage + "</color> damage.");
+                    Debug.Log("Your poisons boil in their blood for <color=green>" + poisonDamage + "</color> damage.");
+                    enemy.poisonStacks += 5;
+                }
                 else
                 {
-                    Debug.Log("You slash as them with a flurry of strikes!");
-                    Debug.Log("Your poisons boil in their blood for <color=green>" + poisonDamage + "</color> damage.");
+                    Debug.Log("You slash as them with a flurry of strikes! You deal <color=red>" + totalDamage + "</color> damage.\"");
                     enemy.poisonStacks += 5;
                 }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
@@ -420,7 +405,9 @@ public class Player : MonoBehaviour
             baseDamage *= 2;
         }
     }
-
+    /// <summary>
+    /// calculates total damage to damage the enemy
+    /// </summary>
     void DamageEnemy()
     {
         totalDamage = baseDamage + elementDamage;
@@ -447,68 +434,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    void OnScreenText()
-    {
-        if (xP >= requiredXP)
-        {
-            levelUpText.text = "Level Up!";
-        }
-        else
-        {
-            levelUpText.text = "";
-        }
-
-        chargeCounter.text = "Available Charges: " + storedCharges;
-        chargedCounter.text = "Charged: " + chargedCharges;
-
-        if (passivePoints > 0) // shows when perk is available
-        {
-            perkAvailable.text = "Perk Point Available";
-        }
-        else
-        {
-            perkAvailable.text = "";
-        }
-
-        if (passiveQuick)
-        {
-            quick.text = "Quick";
-        }
-        else
-        {
-            quick.text = "";
-        }
-
-        if (passiveNormal)
-        {
-            normal.text = "Normal";
-        }
-        else
-        {
-            normal.text = "";
-        }
-
-        if (passiveCharges)
-        {
-            charges.text = "Charges";
-        }
-        else
-        {
-            charges.text = "";
-        }
-
-        if (passiveLuck)
-        {
-            lucky.text = "Lucky";
-        }
-        else
-        {
-            lucky.text = "";
-        }
-
-        playerLvlText.text = "Lv" + (playerLevel + 1);
-        enemyLvlText.text = "Lv" + enemy.enemyLevel;
-    }
     /// <summary>
     /// Allows sword/fire to heal on critical strikes
     /// </summary>
