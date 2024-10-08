@@ -7,24 +7,29 @@ using TMPro;
 public class Enemies : MonoBehaviour
 {
     public Player player;
-    public HealthBarManager healthBarManager;
-    public TMP_Text poisonCounter;
+
+    [Space]
+    [Header("Managers")]
     public GameManager gameManager;
     public RoomManager roomManager;
-
-    public bool isEnemyTurn = false;
+    public HealthBarManager healthBarManager;
+    [Space]
+    [Header("Enemy Type")]
     public bool isUndead = false;
     public bool isBandit = false;
     public bool isWolf = false;
+    [Space]
+    [Header("Enemy States")]
     public bool isEnemyDead = true;
     public bool isBossSpawned = false;
-
+    public bool isEnemyTurn = false;
+    [Space]
+    [Header("Enemy Stats")]
     public int enemyLevel;
     public int enemyXP;
-    public int poisonStacks = 0;
-
     public float health = 50;
     public float maxHealth = 50;
+    public int poisonStacks = 0;
 
     private int enemyDamage;
 
@@ -37,11 +42,6 @@ public class Enemies : MonoBehaviour
         }
         BossAttacks();
         OnDeath();
-        if (player.daggerPoison)
-        {
-            poisonCounter.text = "Poison Stacks: " + poisonStacks;
-        }
-
     }
     /// <summary>
     /// randomises level, which in turn effect xp and hp, random enemy type is rolled for as well.
@@ -205,5 +205,14 @@ public class Enemies : MonoBehaviour
                 Attack();
             }
         }
+    }
+
+    void MiniBosses()
+    {
+        // room 1 = cave
+
+        // room 2 = forest
+
+        // room 3 = campsite
     }
 }

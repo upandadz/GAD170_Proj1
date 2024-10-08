@@ -8,6 +8,7 @@ public class OnScreenText : MonoBehaviour
 {
     public Player player;
     public Enemies enemy;
+    public TMP_Text poisonCounter;
     public TMP_Text chargeCounter;
     public TMP_Text chargedCounter;
     public TMP_Text perkAvailable;
@@ -102,6 +103,11 @@ public class OnScreenText : MonoBehaviour
         else
         {
             attack.text = "";
+        }
+
+        if (player.daggerPoison)
+        {
+            poisonCounter.text = "Poison Stacks: " + enemy.poisonStacks;
         }
 
         playerLvlText.text = "Lv" + (player.playerLevel + 1);

@@ -5,32 +5,39 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
+    public Image xPBarFill;
     public Enemies enemy;
+    [Header("Managers")]
     public HealthBarManager healthBarManager;
     public GameManager gameManager;
     public RoomManager roomManager;
-    public Image xPBarFill;
-
-
-    public bool isPlayerTurn = false;
+    [Space]
+    [Header("Weapon Type")]
     public bool swordFire = false;
     public bool daggerPoison = false;
     public bool hammerHoly = false;
+    [Space]
+    [Header("Player States")]
     public bool canAttack = false;
     public bool isAlive = true;
+    public bool isPlayerTurn = false;
+    public bool hasAttacked = false;
+    [Space]
+    [Header("Perks")]
     public bool passiveLuck = false;
     public bool passiveQuick = false;
     public bool passiveNormal = false;
     public bool passiveCharges = false;
-    public bool hasAttacked = false;
-
-    public int playerLevel = 0;
+    [Space]
+    [Header("Charge ints")]
     public int storedCharges = 2;
     public int chargeRegen = 2;
     public int maxStored = 6;
     public int chargedCharges = 0;
+    [Space]
+    [Header("Player Stats")]
+    public int playerLevel = 0;
     public int passivePoints = 0;
-
     public float xP = 0;
     public float requiredXP = 100;
     public float health = 150f;
@@ -150,13 +157,23 @@ public class Player : MonoBehaviour
             }
         }
     }
-
+    /// <summary>
+    /// Put in values for damage values of quick attack, normal attack, and special attack
+    /// </summary>
+    /// <param name="quickBase"></param>
+    /// <param name="quickElement"></param>
+    /// <param name="normalBase"></param>
+    /// <param name="normalElement"></param>
+    /// <param name="specialBase"></param>
+    /// <param name="specialElement"></param>
     void Attacks(int quickBase, int quickElement, int normalBase, int normalElement, int specialBase, int specialElement)
     {
         if (isPlayerTurn && enemy.isEnemyDead == false && canAttack && isAlive)
         {
-            if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 1) // Quick Attack
+            // Quick Attack if you have 1 charge
+            if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 1)
             {
+                Debug.Log("You quickly strike!");
                 chargedCharges -= 1;
                 baseDamage = quickBase;
                 elementDamage = quickElement;
@@ -165,21 +182,20 @@ public class Player : MonoBehaviour
                 SwordHeal();
                 DamageEnemy();
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
-                Debug.Log("You quickly strike for <color=red>" + totalDamage + "</color> damage.");
+                Debug.Log("You deal <color=red>" + totalDamage + " </color>damage!");
                 if (daggerPoison)
                 {
                     PoisonStack();
-                }
-                if (didCrit)
-                {
-                    Debug.LogError("You critically strike!");
                 }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
 
             }
-            if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 2) // Normal Attack
+
+            // Normal Attack if you have 2 charges
+            if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 2)
             {
+                Debug.Log("You swing at them!");
                 chargedCharges -= 2;
                 baseDamage = normalBase;
                 elementDamage = normalElement;
@@ -193,20 +209,32 @@ public class Player : MonoBehaviour
                 SwordHeal();
                 DamageEnemy();
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
-                Debug.Log("You swing at them for <color=red>" + totalDamage + "</color> damage.");
+                Debug.Log("You deal <color=red>" + totalDamage + " </color>damage!");
                 if (daggerPoison)
                 {
                     PoisonStack();
                 }
-                if (didCrit)
-                {
-                    Debug.LogError("You critically strike!");
-                }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
                 QuickPassive();
             }
-            if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 4) // Special Attack
+
+            // Special Attack if you have 4 charges
+            if (Input.GetKeyDown(KeyCode.Return) && chargedCharges == 4)
             {
+                #region different debug logs for different weapon types
+                if (swordFire)
+                {
+                    Debug.Log("Your blade engulfs in flames as you strike with all your rage!");
+                }
+                if (daggerPoison)
+                {
+                    Debug.Log("You lash out with an intense flurry of strikes!");
+                }
+                if (hammerHoly)
+                {
+                    Debug.Log("You draw on the power of something unknown, striking your foe!");
+                }
+                #endregion
                 int poisonDamage = (3 * playerLevel) * enemy.poisonStacks;
                 chargedCharges -= 4;
                 baseDamage = specialBase;
@@ -221,25 +249,14 @@ public class Player : MonoBehaviour
                 }
                 enemy.health -= poisonDamage;
                 healthBarManager.UpdateEnemyHealthBar(enemy.health, enemy.maxHealth);
-
-                if (didCrit && (swordFire || hammerHoly))
+                Debug.Log("You deal <color=red>" + totalDamage + " </color>damage!");
+                if (daggerPoison && enemy.poisonStacks > 0)
                 {
-                    Debug.Log("You lash out with everything for <color=red>" + totalDamage + "</color> damage.");
-                    Debug.LogError("You critically strike!");
-                }
-                else if (swordFire || hammerHoly)
-                {
-                    Debug.Log("You lash out with everything for <color=red>" + totalDamage + "</color> damage.");
-                }
-                else if (enemy.poisonStacks > 0)
-                {
-                    Debug.Log("You slash as them with a flurry of strikes! You deal <color=red>" + totalDamage + "</color> damage.");
                     Debug.Log("Your poisons boil in their blood for <color=green>" + poisonDamage + "</color> damage.");
                     enemy.poisonStacks += 5;
                 }
-                else
+                else if (daggerPoison)
                 {
-                    Debug.Log("You slash as them with a flurry of strikes! You deal <color=red>" + totalDamage + "</color> damage.\"");
                     enemy.poisonStacks += 5;
                 }
                 Debug.Log("They have <color=red>" + enemy.health + "</color> health remaining.");
@@ -391,6 +408,7 @@ public class Player : MonoBehaviour
         if (didCrit)
         {
             baseDamage *= 2;
+            Debug.LogError("You critically strike!");
         }
     }
     /// <summary>

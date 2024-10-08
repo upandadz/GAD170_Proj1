@@ -12,7 +12,7 @@ public class RoomManager : MonoBehaviour
 
     public bool canWalk = false;
 
-    private int walkRoll;
+    public int walkRoll;
     private int dropRoll;
 
     void Update()
