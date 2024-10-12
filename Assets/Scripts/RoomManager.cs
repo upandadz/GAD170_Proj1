@@ -11,9 +11,11 @@ public class RoomManager : MonoBehaviour
     public TMP_Text ventureOn;
 
     public bool canWalk = false;
+    public bool miniBossSpawn = false;
 
     public int walkRoll;
     private int dropRoll;
+    private int bossRoll;
 
     void Update()
     {
@@ -55,6 +57,16 @@ public class RoomManager : MonoBehaviour
                 if (walkRoll == 3)
                 {
                     Debug.Log("As you continue on you come across what seems to be an abandoned campsite."); // abandoned campsite
+                }
+
+                bossRoll = Random.Range(1, 6); // rolls for 20% chance at mini boss spawn
+                if (bossRoll == 1)
+                {
+                    miniBossSpawn = true;
+                }
+                else
+                {
+                    miniBossSpawn = false;
                 }
 
                 dropRoll = Random.Range(1, 4);

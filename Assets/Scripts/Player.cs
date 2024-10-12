@@ -53,16 +53,23 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        PickWeapons();
+        PickWeapon();
         XPBar();
 
         // if you have selected a weapon type and an enemy is dead, spawn a mob & roll for first turn
         if ((swordFire || daggerPoison || hammerHoly) && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space) && playerLevel < 4)
         {
-            enemy.RandomiseStats();
+            if (roomManager.miniBossSpawn)
+            {
+                enemy.SpawnMiniBoss();
+            }
+            else
+            {
+                enemy.RandomiseStats();
+            }
             gameManager.FirstTurnRoll();
         }
-        else if (playerLevel == 4 && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space))
+        else if (playerLevel == 4 && enemy.isEnemyDead && Input.GetKeyDown(KeyCode.Space)) // if the player is max level, spawn the final boss
         {
             enemy.SpawnBoss();
             gameManager.FirstTurnRoll();
@@ -81,7 +88,7 @@ public class Player : MonoBehaviour
         PerkPick();
     }
 
-    void PickWeapons() // allows the player to press a button to choose a weapon at the start
+    void PickWeapon() // allows the player to press a button to choose a weapon at the start
     {
         if (weaponChoice == 1)
         {
@@ -149,7 +156,7 @@ public class Player : MonoBehaviour
             {
                 return;
             }
-            else if (Input.GetKeyDown(KeyCode.A) && storedCharges >= 1 && isPlayerTurn && canAttack)
+            else if (Input.GetKeyDown(KeyCode.A) && storedCharges >= 1 && isPlayerTurn && canAttack) 
             {
                 storedCharges -= 1;
                 chargedCharges++;

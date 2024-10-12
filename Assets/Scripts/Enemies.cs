@@ -48,32 +48,23 @@ public class Enemies : MonoBehaviour
     /// </summary>
     public void RandomiseStats() 
     {
-        isEnemyDead = false;
         enemyLevel = Random.Range((player.playerLevel) + 1, (player.playerLevel + 4));
-        maxHealth = 25 + 25 * enemyLevel;
-        health = maxHealth;
-        healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
         enemyXP = Random.Range(15, 26) * enemyLevel;
+        SetStats();
         int monsterType = Random.Range(1, 4);
         if (monsterType == 1)
         {
-            isUndead = true;
-            isBandit = false;
-            isWolf = false;
+            SetUndead();
             Debug.Log("A level " + enemyLevel + " undead groans as it stumbles its way toward you.");
         }
         if (monsterType == 2)
         {
-            isUndead = false;
-            isBandit = true;
-            isWolf = false;
+            SetBandit();
             Debug.Log("A level " + enemyLevel + " bandit steps out of the shadows, weapon drawn.");
         }
         if (monsterType == 3)
         {
-            isUndead = false;
-            isBandit = false;
-            isWolf = true;
+            SetWolf();
             Debug.Log("A level " + enemyLevel + " lone wolf growls at you from a distance.");
         }
     }
@@ -186,7 +177,8 @@ public class Enemies : MonoBehaviour
         isUndead = false;
         maxHealth = 400;
         health = maxHealth;
-        Debug.Log("You hear a thunderous howl as what appears to be a wolf walking on two legs bounds towards you!");
+        healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
+        Debug.Log("You hear a thunderous howl! A hulking werewolf charges at you!");
     }
 
     void BossAttacks()
@@ -207,12 +199,60 @@ public class Enemies : MonoBehaviour
         }
     }
 
-    void MiniBosses()
+    public void SpawnMiniBoss()
     {
         // room 1 = cave
-
+        if(roomManager.walkRoll == 1)
+        {
+            SetUndead();
+            Debug.Log("A hulking tower of what was once a man roars, it roars as it bounds toward you!");
+        }
         // room 2 = forest
-
+        else if (roomManager.walkRoll == 2)
+        {
+            SetWolf();
+            Debug.Log("An alpha wolf catches your eye not a moment before it pounces at you!");
+        }
         // room 3 = campsite
+        else if (roomManager.walkRoll == 3)
+        {
+            SetBandit();
+            Debug.Log("The leader of one of the bandit clans plagueing these parts charges at you!");
+        }
+        enemyLevel = player.playerLevel + 4;
+        enemyXP = 25 * enemyLevel;
+        SetStats();
+    }
+
+    void SetBandit() // sets enemy type to bandit
+    {
+        isUndead = false;
+        isBandit = true;
+        isWolf = false;
+    }
+
+    void SetWolf() // sets enemy type to wolf
+    {
+        isUndead = false;
+        isBandit = false;
+        isWolf = true;
+    }
+
+    void SetUndead() // sets enemy type to undead
+    {
+        isUndead = true;
+        isBandit = false;
+        isWolf = false;
+    }
+
+    /// <summary>
+    ///  sets up the stats based on level & resets health
+    /// </summary>
+    void SetStats()
+    {
+        isEnemyDead = false;
+        maxHealth = 25 + 25 * enemyLevel;
+        health = maxHealth;
+        healthBarManager.UpdateEnemyHealthBar(health, maxHealth);
     }
 }
