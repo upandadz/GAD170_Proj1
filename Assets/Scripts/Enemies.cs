@@ -201,19 +201,17 @@ public class Enemies : MonoBehaviour
 
     public void SpawnMiniBoss()
     {
-        // room 1 = cave
+        roomManager.miniBossSpawn = false; // stops spawning another mini boss if you dont venture after the fight
         if(roomManager.walkRoll == 1)
         {
             SetUndead();
             Debug.Log("A hulking tower of what was once a man roars, it roars as it bounds toward you!");
         }
-        // room 2 = forest
         else if (roomManager.walkRoll == 2)
         {
             SetWolf();
             Debug.Log("An alpha wolf catches your eye not a moment before it pounces at you!");
         }
-        // room 3 = campsite
         else if (roomManager.walkRoll == 3)
         {
             SetBandit();
